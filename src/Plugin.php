@@ -21,6 +21,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected $container;
 
     /**
+     * @var Patcher
+     */
+    protected $patcher;
+
+    /**
      * @var Composer
      */
     protected $composer;
@@ -38,13 +43,26 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function activate(Composer $composer, IOInterface $io)
     {
-        $this->container = new ContainerBuilder();
+        $this->composer = $composer;
+        $this->io = $io;
+    }
 
-        $this->container->set('composer', $composer);
-        $this->container->set('io', $io);
+    /**
+     * Retrieve container
+     */
+    protected function getContainer()
+    {
+        if ($this->container === null) {
+            $this->container = new ContainerBuilder();
 
-        $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
-        $loader->load('../res/config/services.xml');
+            $this->container->set('composer', $this->composer);
+            $this->container->set('io', $this->io);
+
+            $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
+            $loader->load('../res/config/services.xml');
+        }
+
+        return $this->container;
     }
 
     /**
@@ -54,7 +72,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function getPatcher()
     {
-        return $this->container->get('patcher');
+        if ($this->patcher === null) {
+            $this->patcher = $this->getContainer()->get('patcher');
+        }
+
+        return $this->patcher;
     }
 
     /**
