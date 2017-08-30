@@ -62,6 +62,8 @@ class Patcher
 
         file_put_contents($pathToMagePhp, $patchedMagePhp);
 
+        $this->io->write('File "Mage.php" is successfully patched.');
+
         return $this;
     }
 
