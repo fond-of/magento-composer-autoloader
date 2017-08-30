@@ -11,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Patcher
 {
-    const COMPOSER_AUTOLOADER_LINE = 'require_once BP . \'..\' . DS . \'vendor\' . DS . \'autoload.php\';' . PHP_EOL;
+    const COMPOSER_AUTOLOADER_LINE = 'require_once BP . DS . \'..\' . DS . \'vendor\' . DS . \'autoload.php\';' . PHP_EOL;
     const VARIEN_AUTOLOADER_LINE = 'Varien_Autoload::register();' . PHP_EOL;
 
     /**
@@ -103,7 +103,7 @@ class Patcher
     {
         $magePhp = file_get_contents($pathToMagePhp);
 
-        if (strpos(self::COMPOSER_AUTOLOADER_LINE, $magePhp) !== false) {
+        if (strpos($magePhp, self::COMPOSER_AUTOLOADER_LINE) !== false) {
             return true;
         }
 
