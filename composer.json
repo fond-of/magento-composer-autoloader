@@ -1,0 +1,43 @@
+{
+  "name": "fondof/magento-composer-autoloader",
+  "description": "n/a",
+  "authors": [
+    {
+      "name": "Daniel Rose",
+      "email": "daniel-rose@gmx.de"
+    }
+  ],
+  "type": "composer-plugin",
+  "keywords": [
+    "magento",
+    "composer",
+    "autoloader"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=5.6.0",
+    "composer-plugin-api": "^1.1",
+    "symfony/filesystem": "^3.3",
+    "symfony/config": "^3.3",
+    "symfony/dependency-injection": "^3.3"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.0",
+    "composer/composer": "^1.5",
+    "phpunit/phpunit": "^5.7"
+  },
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "FondOf\\Magento\\Composer\\Autoloader\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FondOf\\Magento\\Composer\\Autoloader\\": "tests"
+    }
+  },
+  "extra": {
+    "class": "FondOf\\Magento\\Composer\\Autoloader\\Plugin"
+  }
+}
