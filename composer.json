@@ -17,9 +17,9 @@
   "require": {
     "php": ">=5.6.0",
     "composer-plugin-api": "^1.1",
-    "symfony/filesystem": "^3.3",
-    "symfony/config": "^3.3",
-    "symfony/dependency-injection": "^3.3"
+    "symfony/filesystem": "^2.6|^3.3",
+    "symfony/config": "^2.6|^3.3",
+    "symfony/dependency-injection": "^2.6|^3.3"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.0",
