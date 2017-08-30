@@ -3,8 +3,8 @@
 namespace Plugin;
 
 use Composer\Composer;
-use Composer\Config;
 use Composer\IO\IOInterface;
+use Composer\Package\Package;
 use FondOf\Magento\Composer\Autoloader\Plugin\Patcher;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -28,9 +28,9 @@ class PatcherTest extends TestCase
     protected $composerMock;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|Config
+     * @var PHPUnit_Framework_MockObject_MockObject|Package
      */
-    protected $composerConfigMock;
+    protected $packageMock;
 
     /**
      * @var PHPUnit_Framework_MockObject_MockObject|IOInterface
@@ -49,7 +49,7 @@ class PatcherTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->composerConfigMock = $this->getMockBuilder(Config::class)
+        $this->packageMock = $this->getMockBuilder(Package::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -60,8 +60,8 @@ class PatcherTest extends TestCase
         $this->fileSystem = new Filesystem();
 
         $this->composerMock->expects($this->atLeastOnce())
-            ->method('getConfig')
-            ->willReturn($this->composerConfigMock);
+            ->method('getPackage')
+            ->willReturn($this->packageMock);
 
         $this->patcher = new Patcher($this->composerMock, $this->ioMock, $this->fileSystem);
     }
@@ -71,10 +71,11 @@ class PatcherTest extends TestCase
      */
     public function testPatchWithDisabledFlag()
     {
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->with('patch-mage-php')
-            ->willReturn(false);
+        $extra = ['patch-mage-php' => false];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->assertEquals($this->patcher, $this->patcher->patch());
     }
@@ -85,10 +86,11 @@ class PatcherTest extends TestCase
      */
     public function testPatchWithoutRequiredConfig()
     {
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(array('patch-mage-php'), array('magento-root-dir'))
-            ->willReturnOnConsecutiveCalls(true, null);
+        $extra = ['patch-mage-php' => true];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->patcher->patch();
     }
@@ -99,10 +101,11 @@ class PatcherTest extends TestCase
      */
     public function testPatchWithoutExistingMagePhp()
     {
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(array('patch-mage-php'), array('magento-root-dir'))
-            ->willReturnOnConsecutiveCalls(true, 'www');
+        $extra = ['patch-mage-php' => true, 'magento-root-dir' => 'www'];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->fileSystem->mkdir('www/app');
 
@@ -117,10 +120,11 @@ class PatcherTest extends TestCase
     {
         $magePhpContent = '<?php' . PHP_EOL . Patcher::VARIEN_AUTOLOADER_LINE;
 
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(array('patch-mage-php'), array('magento-root-dir'))
-            ->willReturnOnConsecutiveCalls(true, 'www');
+        $extra = ['patch-mage-php' => true, 'magento-root-dir' => 'www'];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->fileSystem->mkdir('www/app');
         $this->fileSystem->dumpFile('www/app/Mage.php', $magePhpContent);
@@ -137,10 +141,11 @@ class PatcherTest extends TestCase
     {
         $magePhpContent = '<?php' . PHP_EOL . Patcher::VARIEN_AUTOLOADER_LINE;
 
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(array('patch-mage-php'), array('magento-root-dir'))
-            ->willReturnOnConsecutiveCalls(true, 'www');
+        $extra = ['patch-mage-php' => true, 'magento-root-dir' => 'www'];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->fileSystem->mkdir('www/app');
         $this->fileSystem->dumpFile('www/app/Mage.php', $magePhpContent);
@@ -156,10 +161,11 @@ class PatcherTest extends TestCase
     {
         $magePhpContent = '<?php' . PHP_EOL . Patcher::VARIEN_AUTOLOADER_LINE . Patcher::COMPOSER_AUTOLOADER_LINE;
 
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(array('patch-mage-php'), array('magento-root-dir'))
-            ->willReturnOnConsecutiveCalls(true, 'www');
+        $extra = ['patch-mage-php' => true, 'magento-root-dir' => 'www'];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->fileSystem->mkdir('www/app');
         $this->fileSystem->dumpFile('www/app/Mage.php', $magePhpContent);
@@ -175,10 +181,11 @@ class PatcherTest extends TestCase
     {
         $magePhpContent = '<?php' . PHP_EOL . Patcher::VARIEN_AUTOLOADER_LINE;
 
-        $this->composerConfigMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(array('patch-mage-php'), array('magento-root-dir'))
-            ->willReturnOnConsecutiveCalls(true, 'www');
+        $extra = ['patch-mage-php' => true, 'magento-root-dir' => 'www'];
+
+        $this->packageMock->expects($this->atLeastOnce())
+            ->method('getExtra')
+            ->willReturn($extra);
 
         $this->fileSystem->mkdir('www/app');
         $this->fileSystem->dumpFile('www/app/Mage.php', $magePhpContent);
@@ -201,5 +208,4 @@ class PatcherTest extends TestCase
 
         $this->fileSystem->remove('www');
     }
-
 }

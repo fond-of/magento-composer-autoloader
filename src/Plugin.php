@@ -48,6 +48,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
+     * Retrieve patcher
+     *
      * @return Patcher|object
      */
     protected function getPatcher()
@@ -76,22 +78,26 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::POST_AUTOLOAD_DUMP => 'onPostAutoloadDump',
             ScriptEvents::POST_INSTALL_CMD => 'onPostInstallCmd',
             ScriptEvents::POST_UPDATE_CMD => 'onPostUpdateCmd'
         ];
     }
 
-    public function onPostAutoloadDump(Event $event)
-    {
-        $this->getPatcher()->patch();
-    }
-
+    /**
+     * On post install cmd
+     *
+     * @param Event $event
+     */
     public function onPostInstallCmd(Event $event)
     {
         $this->getPatcher()->patch();
     }
 
+    /**
+     * On post update cmd
+     *
+     * @param Event $event
+     */
     public function onPostUpdateCmd(Event $event)
     {
         $this->getPatcher()->patch();

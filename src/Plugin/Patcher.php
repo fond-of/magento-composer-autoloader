@@ -11,20 +11,31 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Patcher
 {
-    const COMPOSER_AUTOLOADER_LINE = 'require_once BP . \'..\' . DS . \'vendor\' . DS . \'autoload.php\';' . PHP_EOL;
-
+    const COMPOSER_AUTOLOADER_LINE = 'require_once BP . DS . \'..\' . DS . \'vendor\' . DS . \'autoload.php\';' . PHP_EOL;
     const VARIEN_AUTOLOADER_LINE = 'Varien_Autoload::register();' . PHP_EOL;
 
-    protected $config;
+    /**
+     * @var \Composer\Package\RootPackageInterface
+     */
+    protected $package;
 
+    /**
+     * @var Composer
+     */
     protected $composer;
 
+    /**
+     * @var IOInterface
+     */
     protected $io;
 
+    /**
+     * @var Filesystem
+     */
     protected $filesystem;
 
     /**
-     * Patcher constructor.
+     * Constructor
      *
      * @param Composer $composer
      * @param IOInterface $io
@@ -35,10 +46,12 @@ class Patcher
         $this->composer = $composer;
         $this->io = $io;
         $this->filesystem = $fileSystem;
-        $this->config = $composer->getConfig();
+        $this->package = $composer->getPackage();
     }
 
     /**
+     * Patch Mage.php
+     *
      * @return $this
      */
     public function patch()
@@ -62,42 +75,54 @@ class Patcher
 
         file_put_contents($pathToMagePhp, $patchedMagePhp);
 
+        $this->io->write('File "Mage.php" is successfully patched.');
+
         return $this;
     }
 
     /**
+     * Can patch Mage.php
+     *
      * @return bool
      */
     protected function canPatch()
     {
-        $patchMagePhp = $this->config->get('patch-mage-php');
+        $extra = $this->package->getExtra();
 
-        if ($patchMagePhp === null || $patchMagePhp === false) {
-            return false;
-        }
-
-        return true;
+        return array_key_exists('patch-mage-php', $extra) && $extra['patch-mage-php'] === true;
     }
 
+    /**
+     * Is Mage.php already patched
+     *
+     * @param $pathToMagePhp
+     *
+     * @return bool
+     */
     protected function isAlreadyPatched($pathToMagePhp)
     {
         $magePhp = file_get_contents($pathToMagePhp);
 
-        if (strpos(self::COMPOSER_AUTOLOADER_LINE, $magePhp) !== false) {
+        if (strpos($magePhp, self::COMPOSER_AUTOLOADER_LINE) !== false) {
             return true;
         }
 
         return false;
     }
 
+    /**
+     * Retrieve path to Mage.php
+     *
+     * @return string
+     */
     protected function getPathToMagePhp() {
-        $magentoRootDir = $this->config->get('magento-root-dir');
+        $extra = $this->package->getExtra();
 
-        if ($magentoRootDir === null) {
+        if (!array_key_exists('magento-root-dir', $extra) || $extra['magento-root-dir'] === '') {
             throw new InvalidConfigException('The setting "magento-root-dir" is required.');
         }
 
-        $pathToMagePhp = $magentoRootDir . '/app/Mage.php';
+        $pathToMagePhp = $extra['magento-root-dir'] . '/app/Mage.php';
 
         if (!$this->filesystem->exists($pathToMagePhp)) {
             throw new FileNotFoundException('File "Mage.php" not found.');

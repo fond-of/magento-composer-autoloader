@@ -2,16 +2,7 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
-    <!--<parameters>
-        <parameter key="mailer.transport">sendmail</parameter>
-    </parameters>-->
-
     <services>
-        <!--<service id="mailer" class="Mailer">
-            <argument>%mailer.transport%</argument>
-        </service>-->
-
         <service id="filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
 
         <service id="patcher" class="FondOf\Magento\Composer\Autoloader\Plugin\Patcher">
